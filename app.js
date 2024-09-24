@@ -9,7 +9,7 @@ const loggerService = require("./logger/loggerServices");
 require('dotenv').config();
 
 const app = express();
-const PORT = 8181;
+const PORT = process.env.PORT || 8181;
 
 
 app.use(corsMiddleWare);
