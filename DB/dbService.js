@@ -5,6 +5,8 @@ const congif = require('config');
 const ENVIRONMENT = congif.get('ENVIRONMENT');
 
 const connectToDb = async () => {
+    console.log(ENVIRONMENT);
+
     if (ENVIRONMENT === 'development') {
         await connectToLocalDb();
     };
