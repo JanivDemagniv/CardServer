@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { Name } = require('../../../helpers/mongodb/name');
+const { Name } = require('../../../helpers/mongodb/Name');
 const { PHONE, EMAIL } = require('../../../helpers/mongodb/mongooseValidators');
 const { Image } = require('../../../helpers/mongodb/Image');
 const { Address } = require('../../../helpers/mongodb/Address');
