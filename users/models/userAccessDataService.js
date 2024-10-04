@@ -72,4 +72,13 @@ const changeIsBusiness = async (userId) => {
     };
 };
 
-module.exports = { createUser, getUser, getUsers, loginUser, editUser, changeIsBusiness }
+const deleteUser = async (userId) => {
+    try {
+        let deleteUser = await User.findByIdAndDelete(userId);
+        return deleteUser
+    } catch (error) {
+        createError('Mongoose', error)
+    }
+};
+
+module.exports = { createUser, getUser, getUsers, loginUser, editUser, changeIsBusiness, deleteUser }

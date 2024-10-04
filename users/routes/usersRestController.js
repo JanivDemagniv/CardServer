@@ -1,6 +1,6 @@
 const auth = require("../../auth/authService");
 const { handleError } = require("../../utils/handleErrors");
-const { createUser, getUser, getUsers, loginUser, editUser, changeIsBusiness } = require("../models/userAccessDataService");
+const { createUser, getUser, getUsers, loginUser, editUser, changeIsBusiness, deleteUser } = require("../models/userAccessDataService");
 const express = require('express');
 const { validateRegistration, validateLogin } = require("../validation/userValidationService");
 const router = express.Router();
@@ -94,9 +94,27 @@ router.patch('/:id', auth, async (req, res) => {
         const changeIsBusiness = await changeIsBusiness(id);
         res.send(changeIsBusiness);
     } catch (error) {
-        handleError(res, 400, error.message)
-    }
-})
+        handleError(res, 400, error.message);
+    };
+});
+
+router.delete('/:id', auth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userInfo = req.user;
+
+        if (userInfo._id !== id && !userInfo.isAdmin) {
+            let error = new Error;
+            error.message = 'You are not authorize to delete this user';
+            handleError(res, 403, error.message);
+        };
+
+        const userToDelete = await deleteUser(id);
+        res.send(userToDelete);
+    } catch (error) {
+        handleError(res, 400, error.message);
+    };
+});
 
 
 module.exports = router;
