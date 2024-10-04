@@ -1,22 +1,10 @@
 const auth = require("../../auth/authService");
 const { handleError } = require("../../utils/handleErrors");
-const { createUser, getUser, getUsers, loginUser } = require("../models/userAccessDataService");
+const { createUser, getUser, getUsers, loginUser, editUser, changeIsBusiness } = require("../models/userAccessDataService");
 const express = require('express');
 const { validateRegistration, validateLogin } = require("../validation/userValidationService");
 const router = express.Router();
 
-router.get('/', auth, async (req, res) => {
-    try {
-        let userInfo = req.user;
-        if (!userInfo.isAdmin) {
-            handleError(res, 403, 'You Are not Authorized');
-        }
-        let users = await getUsers();
-        res.send(users);
-    } catch (error) {
-        handleError(res, 400, error.message);
-    };
-});
 
 router.post('/', async (req, res) => {
     try {
@@ -44,13 +32,26 @@ router.post("/login", async (req, res) => {
     }
 });
 
+router.get('/', auth, async (req, res) => {
+    try {
+        let userInfo = req.user;
+        if (!userInfo.isAdmin) {
+            handleError(res, 403, 'You Are not Authorized');
+        }
+        let users = await getUsers();
+        res.send(users);
+    } catch (error) {
+        handleError(res, 400, error.message);
+    };
+});
+
 router.get('/:id', auth, async (req, res) => {
     try {
         const { id } = req.params;
         const userInfo = req.user;
         if (userInfo._id !== id && !userInfo.isAdmin) {
             let error = new Error;
-            error.message = 'You are not athurized to change this user';
+            error.message = 'You are not athurized to see user info';
             handleError(res, 403, error);
         }
         const user = await getUser(id);
@@ -59,6 +60,43 @@ router.get('/:id', auth, async (req, res) => {
         handleError(res, 400, error.message);
     };
 });
+
+router.put('/:id', auth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userInfo = req.user;
+        const userFromDb = await getUser(id);
+
+        if (userInfo._id != userFromDb) {
+            let error = new Error;
+            error.message = 'You are not athurized to edit user';
+            handleError(res, 403, error.message);
+        };
+
+        const updatedUser = await editUser(id, req.body);
+        res.send(updatedUser);
+    } catch (error) {
+        handleError(res, 400, error.message)
+    };
+});
+
+router.patch('/:id', auth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userInfo = req.user;
+
+        if (userInfo._id !== id && !userInfo.isAdmin) {
+            let error = new Error;
+            error.message = 'You are not Authorize to change this';
+            handleError(res, 403, error.message);
+        };
+
+        const changeIsBusiness = await changeIsBusiness(id);
+        res.send(changeIsBusiness);
+    } catch (error) {
+        handleError(res, 400, error.message)
+    }
+})
 
 
 module.exports = router;

@@ -7,9 +7,9 @@ const _ = require('lodash')
 const createUser = async (newUser) => {
     try {
         let user = new User(newUser);
-        user.password = generateUserPassword(user.password)
+        user.password = generateUserPassword(user.password);
         user = await user.save();
-        let resUser = _.pick(user, ['_id', 'email', 'name'])
+        let resUser = _.pick(user, ['_id', 'email', 'name']);
         return resUser;
     } catch (error) {
         createError('mongoose', error)
@@ -30,7 +30,7 @@ const getUsers = async () => {
         const users = await User.find();
         return users;
     } catch (error) {
-        createError('mongoose', error)
+        createError('mongoose', error);
     }
 }
 
@@ -40,7 +40,7 @@ const loginUser = async (email, password) => {
         if (!userFromDb) {
             let error = new Error;
             error.message = 'Authentication Error: Invalid email or password';
-            createError('Authentication', error)
+            createError('Authentication', error);
         };
         if (!comparePasswords(password, userFromDb.password)) {
             let error = new Error;
@@ -50,8 +50,26 @@ const loginUser = async (email, password) => {
         userToken = generateAuthToken(userFromDb);
         return userToken
     } catch (error) {
-        createError('mongoose', error)
-    }
-}
+        createError('mongoose', error);
+    };
+};
 
-module.exports = { createUser, getUser, getUsers, loginUser }
+const editUser = async (userId, userToUpdate) => {
+    try {
+        let newUpdatedUser = await User.findByIdAndUpdate(userId, userToUpdate);
+        return newUpdatedUser;
+    } catch (error) {
+        createError('Mongoose', error);
+    };
+};
+
+const changeIsBusiness = async (userId) => {
+    try {
+        let updatedUser = await User.findByIdAndUpdate(userId, { isBusiness: !isBusiness });
+        return updatedUser;
+    } catch (error) {
+        createError('Mongoose', error);
+    };
+};
+
+module.exports = { createUser, getUser, getUsers, loginUser, editUser, changeIsBusiness }
