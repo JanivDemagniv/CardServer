@@ -67,7 +67,7 @@ router.put('/:id', auth, async (req, res) => {
         const userInfo = req.user;
         const userFromDb = await getUser(id);
 
-        if (userInfo._id != userFromDb) {
+        if (userInfo._id != userFromDb._id) {
             let error = new Error;
             error.message = 'You are not athurized to edit user';
             handleError(res, 403, error.message);
