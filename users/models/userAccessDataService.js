@@ -1,6 +1,7 @@
 const { generateAuthToken } = require("../../auth/providers/jwt");
 const { createError } = require("../../utils/handleErrors");
 const { comparePasswords, generateUserPassword } = require("../helpers/bcryp");
+const { oppositeArgument } = require("../helpers/functions");
 const User = require("./mongodb/User");
 const _ = require('lodash')
 
@@ -63,9 +64,10 @@ const editUser = async (userId, userToUpdate) => {
     };
 };
 
-const changeIsBusiness = async (userId) => {
+const changeIsBusiness = async (userId, isBusiness) => {
     try {
-        let updatedUser = await User.findByIdAndUpdate(userId, { isBusiness: !isBusiness });
+        let newIsBusiness = oppositeArgument(isBusiness)
+        let updatedUser = await User.findByIdAndUpdate(userId, { isBusiness: newIsBusiness });
         return updatedUser;
     } catch (error) {
         createError('Mongoose', error);

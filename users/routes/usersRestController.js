@@ -1,6 +1,6 @@
 const auth = require("../../auth/authService");
 const { handleError } = require("../../utils/handleErrors");
-const { createUser, getUser, getUsers, loginUser, editUser, changeIsBusiness, deleteUser } = require("../models/userAccessDataService");
+const { createUser, getUser, getUsers, loginUser, editUser, deleteUser, changeIsBusiness } = require("../models/userAccessDataService");
 const express = require('express');
 const { validateRegistration, validateLogin } = require("../validation/userValidationService");
 const router = express.Router();
@@ -84,15 +84,15 @@ router.patch('/:id', auth, async (req, res) => {
     try {
         const { id } = req.params;
         const userInfo = req.user;
+        const userFromDb = await getUser(id)
 
         if (userInfo._id !== id && !userInfo.isAdmin) {
             let error = new Error;
             error.message = 'You are not Authorize to change this';
             handleError(res, 403, error.message);
         };
-
-        const changeIsBusiness = await changeIsBusiness(id);
-        res.send(changeIsBusiness);
+        const newUser = await changeIsBusiness(id, userFromDb.isBusiness);
+        res.send(newUser);
     } catch (error) {
         handleError(res, 400, error.message);
     };
