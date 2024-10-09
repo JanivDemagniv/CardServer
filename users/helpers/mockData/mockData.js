@@ -79,7 +79,7 @@ let mockData = [
 const createUserMockData = async () => {
     let users = await User.find();
 
-    if (users.length < 3) {
+    if (users.length == 0) {
         mockData.forEach(async (mockUser) => {
             await createUser(mockUser);
         });
